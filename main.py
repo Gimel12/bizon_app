@@ -10,6 +10,8 @@ from functools import partial
 from PyQt5 import QtGui, QtCore
 import sys
 
+__version__ = '1.0.0'
+
 class WebEnginePage(QtWebEngineWidgets.QWebEnginePage):
     def createWindow(self, _type):
         page = WebEnginePage(self)
@@ -122,7 +124,7 @@ class MainWindow(QMainWindow):
         widget = QWidget()
         widget.setLayout(vbox)
         self.setCentralWidget(widget)
-        self.setWindowTitle("Bizon APP")        
+        self.setWindowTitle("Bizon APP " + __version__)              
         self.setMinimumSize(1000,700)
         self.activate_tab("Home")
            
