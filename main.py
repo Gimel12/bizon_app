@@ -141,7 +141,7 @@ class MainWindow(QMainWindow):
     def update_app(self, event):
         buttonReply = QMessageBox.question(self, 'Update', "Do you want to update the Bizon App?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if buttonReply == QMessageBox.Yes:            
-            r = os.popen("/usr/local/share/dlbt_os/upd_bza").read()
+            r = os.popen("/usr/local/share/dlbt_os/bza/biz_app/upd_bza").read()
             print(r)
         
     
