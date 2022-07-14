@@ -19,6 +19,25 @@ class Css_Styles:
                 color: white;
             }
         """)
+        
+    @staticmethod
+    def set_label_style(item):        
+        item.setStyleSheet("""
+        font-family: UnDinaru;
+        font-size: 18px;
+        font-weight: 500;
+        color : #424242; padding: 5px 10px; border-radius: 15px;
+        """)
+        
+    @staticmethod
+    def set_label_hover_style(item):        
+        item.setStyleSheet("""        
+        font-family: UnDinaru;
+        font-size: 18px;      
+        font-weight: 1500;  
+        background-color: rgba(0,57,156,0.25);
+        color: #3563E9;
+        """)
     
     @staticmethod  
     def set_whole_styles(item, background_path):
@@ -34,16 +53,7 @@ class Css_Styles:
             }
             QStatusBar{
                 color: white;
-            }
-            QLabel{
-                font-family: UnDinaru;
-                font-size: 18px;
-                color : #424242; padding: 5px 10px; border-radius: 5px;
             }            
-            
-            QLabel:hover {
-                color: #3563E9;
-            }
 
             QPushButton:pressed {
                 background-color: rgba(89,125,89,1.0);    
