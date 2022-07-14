@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
         self.btns = []
         self.active_tab = "home"        
         self.set_looks()
-        self.setWindowIcon(QtGui.QIcon('/usr/local/share/dlbt_os/bza/biz_app/ico.png'))
+        self.setWindowIcon(QtGui.QIcon('/usr/local/share/dlbt_os/bza/bizon_app/ico.png'))
         self.setup_web_widget()            
         self.show()
     
@@ -85,8 +85,7 @@ class MainWindow(QMainWindow):
         
         vbox = QVBoxLayout()
         ## Add buttons bar
-        hbox = QHBoxLayout()
-        self.bt = ["home", "guides", "script", "ai_catalog", "bizon_apps", "support"]
+        hbox = QHBoxLayout()        
                 
         hsp1 = QSpacerItem(40, 10, QSizePolicy.Expanding, QSizePolicy.Minimum)
         hsp2 = QSpacerItem(25, 10, QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -95,7 +94,7 @@ class MainWindow(QMainWindow):
         self.upd_btn.setMinimumWidth(20)
         self.upd_btn.setMaximumHeight(30)        
         self.upd_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        qp = QPixmap("/usr/local/share/dlbt_os/bza/biz_app/ico_upd.png")
+        qp = QPixmap("/usr/local/share/dlbt_os/bza/bizon_app/ico_upd.png")
         self.upd_btn.setPixmap(qp.scaledToHeight(20))
         self.upd_btn.mousePressEvent = self.update_app
         
@@ -115,7 +114,7 @@ class MainWindow(QMainWindow):
         self.menu_btn.setMinimumWidth(20)
         self.menu_btn.setMaximumHeight(30)
         self.menu_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        qp = QPixmap("/usr/local/share/dlbt_os/bza/biz_app/ico_menu.png")
+        qp = QPixmap("/usr/local/share/dlbt_os/bza/bizon_app/ico_menu.png")
         self.menu_btn.setPixmap(qp.scaledToHeight(self.menu_btn.height()))
         self.menu_btn.setAlignment(QtCore.Qt.AlignCenter)
         # self.menu_btn.setScaledContents(True)        
@@ -141,7 +140,7 @@ class MainWindow(QMainWindow):
     def update_app(self, event):
         buttonReply = QMessageBox.question(self, 'Update', "Do you want to update the Bizon App?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if buttonReply == QMessageBox.Yes:            
-            r = os.popen("/usr/local/share/dlbt_os/bza/biz_app/upd_bza").read()
+            r = os.popen("/usr/local/share/dlbt_os/bza/bizon_app/upd_bza").read()
             print(r)
         
     
