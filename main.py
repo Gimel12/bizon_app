@@ -60,6 +60,7 @@ class MainWindow(QMainWindow):
         self.btns = []
         self.active_tab = "home"        
         self.set_looks()
+        self.setWindowIcon(QtGui.QIcon('/usr/local/share/dlbt_os/bza/biz_app/ico.png'))
         self.setup_web_widget()            
         self.show()
     
@@ -103,7 +104,7 @@ class MainWindow(QMainWindow):
         self.menu_btn.setMinimumWidth(20)
         self.menu_btn.setMaximumHeight(30)
         self.menu_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        qp = QPixmap("./ico_menu.png")
+        qp = QPixmap("/usr/local/share/dlbt_os/bza/biz_app/ico_menu.png")
         self.menu_btn.setPixmap(qp.scaledToHeight(self.menu_btn.height()))
         self.menu_btn.setAlignment(QtCore.Qt.AlignCenter)
         # self.menu_btn.setScaledContents(True)        
