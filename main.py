@@ -9,6 +9,7 @@ from css_style import Css_Styles
 from functools import partial
 from PyQt5 import QtGui, QtCore
 import sys
+import os
 
 __version__ = '1.0.0'
 
@@ -90,6 +91,14 @@ class MainWindow(QMainWindow):
         hsp1 = QSpacerItem(40, 10, QSizePolicy.Expanding, QSizePolicy.Minimum)
         hsp2 = QSpacerItem(25, 10, QSizePolicy.Expanding, QSizePolicy.Minimum)
         
+        self.upd_btn = QLabel()
+        self.upd_btn.setMinimumWidth(20)
+        self.upd_btn.setMaximumHeight(30)        
+        self.upd_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        qp = QPixmap("/usr/local/share/dlbt_os/bza/biz_app/ico_upd.png")
+        self.upd_btn.setPixmap(qp.scaledToHeight(20))
+        self.upd_btn.mousePressEvent = self.update_app
+        
         for k in self.url_map:
             b = MyLabel(k)
             b.setMinimumWidth(84)
@@ -111,6 +120,7 @@ class MainWindow(QMainWindow):
         self.menu_btn.setAlignment(QtCore.Qt.AlignCenter)
         # self.menu_btn.setScaledContents(True)        
         
+        hbox.addWidget(self.upd_btn)
         hbox.addSpacerItem(hsp1)
         for b in self.btns:
             hbox.addWidget(b)
@@ -128,6 +138,13 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1000,700)
         self.activate_tab("Home")
            
+    def update_app(self, event):
+        buttonReply = QMessageBox.question(self, 'Update', "Do you want to update the Bizon App?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if buttonReply == QMessageBox.Yes:
+            print("updating the app..")
+            r = os.popen("git -C /usr/local/share/dlbt_os/bza/biz_app/ pull https://technopremium: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@github.com/technopremium/bizon_app.git release").read()
+            print(r)
+        
     
     def update_active_tab(self):        
         url = QUrl.fromUserInput(self.url_map[self.active_tab])
