@@ -140,9 +140,8 @@ class MainWindow(QMainWindow):
            
     def update_app(self, event):
         buttonReply = QMessageBox.question(self, 'Update', "Do you want to update the Bizon App?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        if buttonReply == QMessageBox.Yes:
-            print("updating the app..")
-            r = os.popen("git -C /usr/local/share/dlbt_os/bza/biz_app/ pull https://technopremium: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@github.com/technopremium/bizon_app.git release").read()
+        if buttonReply == QMessageBox.Yes:            
+            r = os.popen("/usr/local/share/dlbt_os/upd_bza").read()
             print(r)
         
     
