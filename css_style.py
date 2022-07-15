@@ -25,7 +25,7 @@ class Css_Styles:
         item.setStyleSheet("""
         font-family: UnDinaru;
         font-size: 18px;
-        font-weight: 500;
+        font-weight: 400;
         color : #424242; padding: 5px 10px; border-radius: 15px;
         """)
         
@@ -34,7 +34,7 @@ class Css_Styles:
         item.setStyleSheet("""        
         font-family: UnDinaru;
         font-size: 18px;      
-        font-weight: 1500;  
+        font-weight: bold;  
         background-color: rgba(0,57,156,0.25);
         color: #3563E9;
         """)
