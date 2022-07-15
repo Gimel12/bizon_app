@@ -141,6 +141,14 @@ class MainWindow(QMainWindow):
         buttonReply = QMessageBox.question(self, 'Update', "Do you want to update the Bizon App?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if buttonReply == QMessageBox.Yes:            
             r = os.popen("/usr/local/share/dlbt_os/bza/bizon_app/upd_bza").read()
+            msg = QMessageBox(self)
+            msg.setMinimumWidth(200)
+            msg.setMaximumHeight(100)
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("Update")
+            msg.setInformativeText('Please restart the app to apply the changes.')
+            msg.setWindowTitle("Update Successful")
+            msg.exec_()
             print(r)
         
     
