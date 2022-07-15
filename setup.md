@@ -1,4 +1,6 @@
 ## Instructions for installation
+* `sudo apt install python3-pyqt5.qtwebengine`
+* `pip install pyqtwebengine`
 * `mkdir /usr/local/share/dlbt_os/bza`
 * `mkdir /usr/local/share/dlbt_os/bza/bizon_app`
 * `git clone https://github.com/technopremium/bizon_app.git /usr/local/share/dlbt_os/bza`
