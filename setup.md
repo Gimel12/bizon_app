@@ -7,7 +7,7 @@
 * `git -C /usr/local/share/dlbt_os/bza/bizon_app checkout release`
 * `sudo nano /usr/share/applications/bizon_start_app.desktop`
 * Copy:
-  ```
+```
 [Desktop Entry]
 Name=Bizon Guide App
 Type=Application
@@ -18,4 +18,4 @@ Comment=The support app from bizon-tech.com
 NoDisplay=false
 Categories=DeepLearning;Support
 Name[en]=Bizon Guide
-  ```
+```
