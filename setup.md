@@ -5,6 +5,8 @@
 * `mkdir /usr/local/share/dlbt_os/bza/bizon_app`
 * `git clone https://github.com/technopremium/bizon_app.git /usr/local/share/dlbt_os/bza`
 * `git -C /usr/local/share/dlbt_os/bza/bizon_app checkout release`
+* `wget https://www.dropbox.com/s/j1hl3m3sp9iwurq/bizon_app-release.zip?dl=0`
+* `mv 'bizon_app-release.zip?dl=0' bizon_app-release.zip`
 * `sudo nano /usr/share/applications/bizon_start_app.desktop`
 * Copy:
 ```
