@@ -57,7 +57,7 @@ class MainWindow(QMainWindow):
             "Scripts": "https://bizonbizon.notion.site/Scripts-9f1e07a85f2346ba9ab8a1bdb824df10",
             "AI catalog": "https://catalog.ngc.nvidia.com/?filters=&orderBy=scoreDESC&query=",
             "Bizon apps": "https://bizon-tech.com/bizonos_features",
-            "Support": "https://bizon-tech.com/contact",
+            "Bizon-bot": "https://082eee78-4758-4d6f.gradio.live",
             
         }
         self.btns = []
