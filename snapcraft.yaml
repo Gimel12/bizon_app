@@ -1,0 +1,127 @@
+name: bizon-guide
+base: core22
+version: '1.0.1'
+summary: Bizon Guide App
+description: |
+  The support app from bizon-tech.com providing guides, 
+  scripts, and support resources for Bizon products.
+  Access documentation, scripts, and AI catalog all in one place.
+
+grade: stable
+confinement: strict
+
+architectures:
+  - build-on: amd64
+    run-on: amd64
+
+apps:
+  bizon-guide:
+    command: snap/local/launchers/bizon-launcher
+    extensions: [gnome]
+    plugs:
+      - desktop
+      - desktop-legacy
+      - wayland
+      - x11
+      - network
+      - home
+      - browser-support
+      - unity7
+      - audio-playback
+      - opengl
+    environment:
+      PYTHONPATH: $SNAP/app:$PYTHONPATH
+      QT_QPA_PLATFORM: xcb
+      # Fix for QtWebEngine
+      DISABLE_WAYLAND: 1
+      # Fix for missing fonts
+      FONTCONFIG_PATH: $SNAP/etc/fonts
+      # Fix for SSL certificates
+      SSL_CERT_FILE: $SNAP/etc/ssl/certs/ca-certificates.crt
+
+parts:
+  launcher:
+    plugin: dump
+    source: snap/local/launchers
+    organize:
+      bizon-launcher: snap/local/launchers/bizon-launcher
+    override-prime: |
+      craftctl default
+      chmod +x $SNAPCRAFT_PRIME/snap/local/launchers/bizon-launcher
+
+  desktop-qt5:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: qt
+    plugin: make
+    make-parameters: ["FLAVOR=qt5"]
+    build-packages:
+      - build-essential
+      - qtbase5-dev
+      - dpkg-dev
+    stage-packages:
+      - libxkbcommon0
+      - ttf-ubuntu-font-family
+      - dmz-cursor-theme
+      - light-themes
+      - adwaita-icon-theme
+      - gnome-themes-standard
+      - shared-mime-info
+      - libqt5gui5
+      - libgdk-pixbuf2.0-0
+      - libqt5svg5
+      - locales-all
+      - libglib2.0-bin
+      - libgtk-3-0
+      - ca-certificates
+
+  bizon-app:
+    after: [desktop-qt5, launcher]
+    plugin: dump
+    source: .
+    organize:
+      "*": app/
+    stage-packages:
+      - python3
+      - python3-pip
+      - python3-pyqt6
+      - python3-pyqt6.qtwebengine
+      - python3-requests
+      - git
+      - libqt6webenginecore6
+      - libqt6webengine6
+      - libqt6webenginewidgets6
+      - libqt6widgets6
+      - libqt6gui6
+      - libqt6core6
+      # Additional dependencies for QtWebEngine
+      - libnspr4
+      - libnss3
+      - libxcomposite1
+      - libxcursor1
+      - libxdamage1
+      - libxi6
+      - libxtst6
+      - libasound2
+      # Font dependencies
+      - fonts-noto
+      - fonts-noto-cjk
+      - fonts-liberation
+    override-build: |
+      craftctl default
+      # Create a desktop file
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/applications
+      cat > $SNAPCRAFT_PART_INSTALL/usr/share/applications/bizon-guide.desktop << EOF
+      [Desktop Entry]
+      Name=Bizon Guide
+      GenericName=Bizon Guide App
+      Comment=The support app from bizon-tech.com
+      Exec=bizon-guide
+      Icon=\${SNAP}/app/ico.png
+      Terminal=false
+      Type=Application
+      Categories=Utility;Network;Documentation;
+      StartupNotify=true
+      EOF
+      # Create metadata directory
+      mkdir -p $SNAPCRAFT_PART_INSTALL/meta/gui
+      cp $SNAPCRAFT_PART_INSTALL/app/ico.png $SNAPCRAFT_PART_INSTALL/meta/gui/icon.png

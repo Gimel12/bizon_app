@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Bizon Guide
+GenericName=Bizon Guide App
+Comment=The support app from bizon-tech.com
+Exec=bizon-guide
+Icon=${SNAP}/app/ico.png
+Terminal=false
+Type=Application
+Categories=Utility;
+StartupNotify=true
