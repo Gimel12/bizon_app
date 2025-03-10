@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  bizon-guide:
+    build: .
+    container_name: bizon-guide
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_QPA_PLATFORM=xcb
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # X11 socket for GUI display
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ${HOME}/.Xauthority:/root/.Xauthority:ro
+      # App cache and configuration
+      - ${HOME}/.bizon_app_cache:/root/.bizon_app_cache
+      # For development: uncomment to mount source files directly
+      # - ./:/app:ro
+    # Use host network for better compatibility with X11 and network access
+    network_mode: "host"
+    # Restart policy
+    restart: unless-stopped
+    # Security options
+    security_opt:
+      - no-new-privileges:true
