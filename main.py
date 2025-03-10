@@ -114,7 +114,8 @@ class MainWindow(QMainWindow):
             "Guides": "https://www.notion.so/bizonbizon/Bizon-Technical-Support-Portal-a1201a84f86b4797982e06d360351f54",
             "Scripts": "https://bizonbizon.notion.site/Scripts-9f1e07a85f2346ba9ab8a1bdb824df10",
             "AI catalog": "https://catalog.ngc.nvidia.com/?filters=&orderBy=scoreDESC&query=",
-            "Support": "http://localhost:3000",
+            "Bizon apps": "https://bizon-tech.com/bizonos_features",
+            "Support": "http://localhost:3000"
             
         }
         self.btns = []
@@ -267,4 +268,8 @@ if __name__ == "__main__":
     main_app = QApplication(sys.argv)
     tester = MainWindow()    
     ## For the app for the user
+<<<<<<< HEAD
     sys.exit(main_app.exec())
+=======
+    sys.exit(main_app.exec_())
+>>>>>>> c6df27b073b57e785cd368a69cff954a355ccac7
