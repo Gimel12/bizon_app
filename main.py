@@ -237,17 +237,46 @@ class MainWindow(QMainWindow):
            
     def update_app(self, event):
         buttonReply = QMessageBox.question(self, 'Update', "Do you want to update the Bizon App?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-        if buttonReply == QMessageBox.StandardButton.Yes:            
-            r = os.popen("/usr/local/share/dlbt_os/bza/bizon_app/upd_bza").read()
-            msg = QMessageBox(self)
-            msg.setMinimumWidth(200)
-            msg.setMaximumHeight(100)
-            msg.setIcon(QMessageBox.Icon.Information)
-            msg.setText("Update")
-            msg.setInformativeText('Please restart the app to apply the changes.')
-            msg.setWindowTitle("Update Successful")
-            msg.exec()
-            print(r)
+        if buttonReply == QMessageBox.StandardButton.Yes:
+            # Get the path to the upd_bza.py script
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            update_script = os.path.join(current_dir, 'upd_bza.py')
+            
+            # Run the update script
+            try:
+                import subprocess
+                result = subprocess.run([sys.executable, update_script], capture_output=True, text=True)
+                success = result.returncode == 0
+                output = result.stdout
+                error = result.stderr
+                
+                # Show appropriate message based on success/failure
+                msg = QMessageBox(self)
+                msg.setMinimumWidth(300)
+                msg.setMaximumHeight(200)
+                
+                if success:
+                    msg.setIcon(QMessageBox.Icon.Information)
+                    msg.setText("Update Successful")
+                    msg.setInformativeText('Please restart the app to apply the changes.')
+                    msg.setWindowTitle("Update Successful")
+                    print("Update successful:\n", output)
+                else:
+                    msg.setIcon(QMessageBox.Icon.Warning)
+                    msg.setText("Update Failed")
+                    msg.setInformativeText(f'Error updating the app: {error}')
+                    msg.setWindowTitle("Update Failed")
+                    print("Update failed:\n", error)
+                
+                msg.exec()
+            except Exception as e:
+                msg = QMessageBox(self)
+                msg.setIcon(QMessageBox.Icon.Critical)
+                msg.setText("Update Error")
+                msg.setInformativeText(f'An error occurred while updating: {str(e)}')
+                msg.setWindowTitle("Update Error")
+                msg.exec()
+                print(f"Update error: {str(e)}")
         
     
     def update_active_tab(self):        
