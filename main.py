@@ -1,36 +1,74 @@
 # from mainW import Ui_MainWindow
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QPixmap, QIcon, QFont
-from PyQt5.QtCore import QTimer
-from PyQt5.QtCore import QUrl
-from PyQt5.QtCore import QObject, pyqtSignal
-from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets
+from PyQt6.QtWidgets import *
+from PyQt6.QtGui import QPixmap, QIcon, QFont, QAction, QCursor
+from PyQt6.QtCore import QTimer
+from PyQt6.QtCore import QUrl
+from PyQt6.QtCore import QObject, pyqtSignal, Qt
+from PyQt6 import QtCore, QtWidgets
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineProfile, QWebEngineSettings
 from css_style import Css_Styles
 from functools import partial
-from PyQt5 import QtGui, QtCore
 import sys
 import os
+import tempfile
 
 __version__ = '1.0.1'
 
-class WebEnginePage(QtWebEngineWidgets.QWebEnginePage):
+class WebEnginePage(QWebEnginePage):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # Set a desktop user agent to avoid mobile redirects
+        self.profile().setHttpUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+        
+        # Configure settings to better handle Notion pages
+        settings = self.settings()
+        settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.JavascriptEnabled, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.JavascriptCanOpenWindows, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.PluginsEnabled, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent, True)
+        
+        # Enable cookies
+        self.profile().setPersistentCookiesPolicy(QWebEngineProfile.PersistentCookiesPolicy.AllowPersistentCookies)
+        
+        # Create a cookie store directory if it doesn't exist
+        cookie_dir = os.path.join(tempfile.gettempdir(), "bizon_app_cookies")
+        if not os.path.exists(cookie_dir):
+            os.makedirs(cookie_dir)
+        self.profile().setPersistentStoragePath(cookie_dir)
+        
+        # Additional settings for Notion pages
+        # Enable DNS prefetching for better performance
+        settings.setAttribute(QWebEngineSettings.WebAttribute.DnsPrefetchEnabled, True)
+        # Allow cross-origin requests which is needed for Notion
+        settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
+        # Allow running insecure content (http content in https pages)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent, True)
+        
     def createWindow(self, _type):
         page = WebEnginePage(self)
         page.urlChanged.connect(self.on_url_changed)
         return page
 
-    @QtCore.pyqtSlot(QtCore.QUrl)
+    @QtCore.pyqtSlot(QUrl)
     def on_url_changed(self, url):
         page = self.sender()
         self.setUrl(url)
         page.deleteLater()
+        
+    def javaScriptConsoleMessage(self, level, message, lineNumber, sourceID):
+        # Uncomment for debugging
+        pass
+        # print(f"JS Console ({level}): {message} [Line: {lineNumber}] [Source: {sourceID}]")
 
 
 class MyLabel(QLabel):
     leftclicked = pyqtSignal()
 
     def mousePressEvent(self, ev):
-        if ev.button() == Qt.LeftButton:
+        if ev.button() == Qt.MouseButton.LeftButton:
             self.leftclicked.emit()
         QLabel.mousePressEvent(self, ev)
 
@@ -46,24 +84,43 @@ class MyLabel(QLabel):
 class MainWindow(QMainWindow):
     
     def __init__(self):
-        super().__init__()        
-        self.browser = QtWebEngineWidgets.QWebEngineView()
-        page = WebEnginePage(self.browser)
+        super().__init__()
+        
+        # Create a custom profile for the browser
+        profile = QWebEngineProfile("bizon_app_profile")
+        profile.setPersistentCookiesPolicy(QWebEngineProfile.PersistentCookiesPolicy.AllowPersistentCookies)
+        profile.setHttpUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+        
+        # Create cache directory if it doesn't exist
+        cache_dir = os.path.expanduser("~/.bizon_app_cache")
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+        profile.setPersistentStoragePath(cache_dir)
+        
+        # Create browser view and page
+        self.browser = QWebEngineView()
+        page = WebEnginePage(self)
+        
+        # Set up the page to handle Notion sites
+        # Note: XSSAuditingEnabled is deprecated in Qt6
+        # Configure settings to better handle Notion pages
+        page.settings().setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
+        page.settings().setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent, True)
+        
         self.browser.setPage(page)
         
         self.url_map = {
-            "Home": "https://bizonbizon.notion.site/Getting-Started-Guide-6956f7a535ed44bdb4ee77e61a88aad5",
+            "Home": "https://bizonbizon.notion.site/Getting-Started-Guide-6956f7a535ed44bdb4ee77e61a88aad5?pvs=4",
             "Guides": "https://www.notion.so/bizonbizon/Bizon-Technical-Support-Portal-a1201a84f86b4797982e06d360351f54",
             "Scripts": "https://bizonbizon.notion.site/Scripts-9f1e07a85f2346ba9ab8a1bdb824df10",
             "AI catalog": "https://catalog.ngc.nvidia.com/?filters=&orderBy=scoreDESC&query=",
-            "Bizon apps": "https://bizon-tech.com/bizonos_features",
-            "Support": "https://bizon-tech.com/contact",
+            "Support": "http://localhost:3000",
             
         }
         self.btns = []
         self.active_tab = "home"        
         self.set_looks()
-        self.setWindowIcon(QtGui.QIcon('/usr/local/share/dlbt_os/bza/bizon_app/ico.png'))
+        self.setWindowIcon(QIcon('/usr/local/share/dlbt_os/bza/bizon_app/ico.png'))
         self.setup_web_widget()            
         self.show()
     
@@ -85,15 +142,54 @@ class MainWindow(QMainWindow):
         
         vbox = QVBoxLayout()
         ## Add buttons bar
+        # Create navigation bar
+        nav_bar = QHBoxLayout()
+        
+        # Back button
+        self.back_btn = QPushButton()
+        self.back_btn.setIcon(QIcon.fromTheme("go-previous"))
+        self.back_btn.setToolTip("Go Back")
+        self.back_btn.setFixedSize(30, 30)
+        self.back_btn.clicked.connect(self.go_back)
+        
+        # Forward button
+        self.forward_btn = QPushButton()
+        self.forward_btn.setIcon(QIcon.fromTheme("go-next"))
+        self.forward_btn.setToolTip("Go Forward")
+        self.forward_btn.setFixedSize(30, 30)
+        self.forward_btn.clicked.connect(self.go_forward)
+        
+        # Refresh button
+        self.refresh_btn = QPushButton()
+        self.refresh_btn.setIcon(QIcon.fromTheme("view-refresh"))
+        self.refresh_btn.setToolTip("Refresh")
+        self.refresh_btn.setFixedSize(30, 30)
+        self.refresh_btn.clicked.connect(self.refresh_page)
+        
+        # Home button
+        self.home_btn = QPushButton()
+        self.home_btn.setIcon(QIcon.fromTheme("go-home"))
+        self.home_btn.setToolTip("Home")
+        self.home_btn.setFixedSize(30, 30)
+        self.home_btn.clicked.connect(lambda: self.activate_tab("Home"))
+        
+        # Add navigation buttons to layout
+        nav_bar.addWidget(self.back_btn)
+        nav_bar.addWidget(self.forward_btn)
+        nav_bar.addWidget(self.refresh_btn)
+        nav_bar.addWidget(self.home_btn)
+        nav_bar.addStretch(1)
+        
+        # Main horizontal layout for tabs
         hbox = QHBoxLayout()        
                 
-        hsp1 = QSpacerItem(40, 10, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        hsp2 = QSpacerItem(25, 10, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        hsp1 = QSpacerItem(40, 10, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        hsp2 = QSpacerItem(25, 10, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         
         self.upd_btn = QLabel()
         self.upd_btn.setMinimumWidth(20)
         self.upd_btn.setMaximumHeight(30)        
-        self.upd_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.upd_btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         qp = QPixmap("/usr/local/share/dlbt_os/bza/bizon_app/ico_upd.png")
         self.upd_btn.setPixmap(qp.scaledToHeight(20))
         self.upd_btn.mousePressEvent = self.update_app
@@ -102,8 +198,8 @@ class MainWindow(QMainWindow):
             b = MyLabel(k)
             b.setMinimumWidth(84)
             b.setMaximumHeight(34)
-            b.setAlignment(QtCore.Qt.AlignCenter)
-            b.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            b.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            b.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
             Css_Styles.set_label_style(self)
             # b.enterEvent = partial(self.enterEventL,b)
             # b.leaveEvent = partial(self.leaveEventL,b)
@@ -113,10 +209,10 @@ class MainWindow(QMainWindow):
         self.menu_btn = QLabel()
         self.menu_btn.setMinimumWidth(20)
         self.menu_btn.setMaximumHeight(30)
-        self.menu_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.menu_btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         qp = QPixmap("/usr/local/share/dlbt_os/bza/bizon_app/ico_menu.png")
         self.menu_btn.setPixmap(qp.scaledToHeight(self.menu_btn.height()))
-        self.menu_btn.setAlignment(QtCore.Qt.AlignCenter)
+        self.menu_btn.setAlignment(Qt.AlignmentFlag.AlignCenter)
         # self.menu_btn.setScaledContents(True)        
         
         hbox.addWidget(self.upd_btn)
@@ -127,6 +223,7 @@ class MainWindow(QMainWindow):
         hbox.addSpacerItem(hsp2)
         hbox.addWidget(self.menu_btn)
                 
+        vbox.addLayout(nav_bar)
         vbox.addLayout(hbox)                
         vbox.addWidget(self.browser)
         
@@ -138,26 +235,36 @@ class MainWindow(QMainWindow):
         self.activate_tab("Home")
            
     def update_app(self, event):
-        buttonReply = QMessageBox.question(self, 'Update', "Do you want to update the Bizon App?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        if buttonReply == QMessageBox.Yes:            
+        buttonReply = QMessageBox.question(self, 'Update', "Do you want to update the Bizon App?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+        if buttonReply == QMessageBox.StandardButton.Yes:            
             r = os.popen("/usr/local/share/dlbt_os/bza/bizon_app/upd_bza").read()
             msg = QMessageBox(self)
             msg.setMinimumWidth(200)
             msg.setMaximumHeight(100)
-            msg.setIcon(QMessageBox.Information)
+            msg.setIcon(QMessageBox.Icon.Information)
             msg.setText("Update")
             msg.setInformativeText('Please restart the app to apply the changes.')
             msg.setWindowTitle("Update Successful")
-            msg.exec_()
+            msg.exec()
             print(r)
         
     
     def update_active_tab(self):        
         url = QUrl.fromUserInput(self.url_map[self.active_tab])
+        # Load the URL directly - we'll handle Notion pages through the WebEnginePage class
         self.browser.load(url)
+    
+    def go_back(self):
+        self.browser.back()
+        
+    def go_forward(self):
+        self.browser.forward()
+        
+    def refresh_page(self):
+        self.browser.reload()
         
 if __name__ == "__main__":     
     main_app = QApplication(sys.argv)
     tester = MainWindow()    
     ## For the app for the user
-    sys.exit(main_app.exec_())
+    sys.exit(main_app.exec())
