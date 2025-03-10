@@ -42,20 +42,19 @@ class Css_Styles:
     @staticmethod
     def set_label_style(item):        
         item.setStyleSheet("""
-        font-family: 'Segoe UI', Arial, sans-serif;
+        font-family: Arial, sans-serif;
         font-size: 16px;
         font-weight: 500;
         color: #424242; 
         padding: 8px 16px; 
         border-radius: 8px;
         margin: 2px;
-        transition: background-color 0.3s;
         """)
         
     @staticmethod
     def set_label_hover_style(item):        
         item.setStyleSheet("""        
-        font-family: 'Segoe UI', Arial, sans-serif;
+        font-family: Arial, sans-serif;
         font-size: 16px;      
         font-weight: 600;  
         background-color: rgba(53, 99, 233, 0.15);
@@ -111,7 +110,7 @@ class Css_Styles:
             
             QLabel {
                 color: #424242;
-                font-family: 'Segoe UI', Arial, sans-serif;
+                font-family: Arial, sans-serif;
             }
             
             QScrollBar:vertical {

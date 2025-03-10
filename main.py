@@ -268,8 +268,4 @@ if __name__ == "__main__":
     main_app = QApplication(sys.argv)
     tester = MainWindow()    
     ## For the app for the user
-<<<<<<< HEAD
     sys.exit(main_app.exec())
-=======
-    sys.exit(main_app.exec_())
->>>>>>> c6df27b073b57e785cd368a69cff954a355ccac7
